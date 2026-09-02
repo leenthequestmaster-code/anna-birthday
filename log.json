@@ -1,0 +1,46 @@
+{
+  "project": "anna-birthday",
+  "date": "2026-09-02",
+  "hallmark_version": "1.1.0",
+  "run": 3,
+  "critique_stamp": {
+    "P": 5,
+    "H": 4,
+    "E": 5,
+    "S": 4,
+    "R": 4,
+    "V": 4
+  },
+  "decisions": {
+    "macrostructure": "Letter",
+    "polish": "HP4 decorative-numeral",
+    "theme": "custom",
+    "vibe": "soft fantasy, manhwa dawn, golden",
+    "paper": "oklch(97.5% 0.013 15)",
+    "accent": "oklch(70% 0.13 75)",
+    "axes": "light / roman-serif / chromatic-amber",
+    "display_font": "Cormorant Garamond (500/600)",
+    "body_font": "Satoshi (400/500/700, Fontshare)",
+    "outlier_font": "Caveat (signature only)",
+    "nav": "none (single-destination gift)",
+    "footer": "Ft6 letter close",
+    "enrichment": "E5 hand-built seal + envelope gate, dawn sky (2 static warm blooms), star field + shooting star, ambient gold motes, letter-card with flourishes + drop-cap",
+    "bgm": "Multo — Cup of Joe (official MV CcS1fsuT10M via YouTube IFrame API; started by seal tap gesture; loops; floating pause/play toggle)",
+    "handoff": "seal tap → flap opens + music starts (780ms) → backdrop melts + letter flies toward camera (700ms) → card lands as the greeting card (card-emerge)",
+    "motion": [
+      "seal-reveal orchestration (one)",
+      "motes drift (ambient content, reduced-motion honoured)",
+      "hover micro"
+    ]
+  },
+  "user_gates": {
+    "audience": "Anna, ~16 years old",
+    "tone": "bright / soft fantasy-manhwa (NOT dark luxury)",
+    "verbatim_message": "Maaf selalu terlambat, tapi dibalik keterlambatan itu, kakak sebenarnya begitu peduli, hadiah ini dibuat khusus karena kakak ingin ulang tahun ini benar-benar membekas untuk Anna. Jangan lupakan kakak yaa!"
+  },
+  "files": ["index.html"],
+  "verification": {
+    "slop_test": "pass — 58 gates swept; fixes applied for gates 48 (inline oklch → tokens), 44a (hero padding ratio 1.5), 40 (muted L52→46, focus L58→54), 26 (disabled cursor), 25 (sub 34→45ch), 51 (numeral overflow-wrap)",
+    "visual_qa": "pass — 320/375/414/768px: no overflow-x, no two-line clickables, verbatim message present, seal-open flow works, reduced-motion collapses correctly (motes off, reveals 150ms), fold check at 1280×800 pass"
+  }
+}
