@@ -2,7 +2,7 @@
   "project": "anna-birthday",
   "date": "2026-09-02",
   "hallmark_version": "1.1.0",
-  "run": 3,
+  "run": 4,
   "critique_stamp": {
     "P": 5,
     "H": 4,
@@ -24,15 +24,23 @@
     "outlier_font": "Caveat (signature only)",
     "nav": "none (single-destination gift)",
     "footer": "Ft6 letter close",
-    "enrichment": "E5 hand-built seal + envelope gate, dawn sky (2 static warm blooms), star field + shooting star, ambient gold motes, letter-card with flourishes + drop-cap",
-    "bgm": "Multo — Cup of Joe (official MV CcS1fsuT10M via YouTube IFrame API; started by seal tap gesture; loops; floating pause/play toggle)",
+    "enrichment": "E5 hand-built seal + envelope gate, dawn sky (2 static warm blooms), star field + shooting star, aurora (2 blurred warm blobs), falling petals (6), ambient gold motes, letter-card with flourishes + drop-cap",
+    "bgm": "Multo — Cup of Joe (official MV CcS1fsuT10M via YouTube IFrame API; player PRIMED on page load so no tap-time delay; starts on first pointerdown at the seal; loops; floating toggle bottom-right; status pill top-right shows preparing/ready/playing/error)",
     "handoff": "seal tap → flap opens + music starts (780ms) → backdrop melts + letter flies toward camera (700ms) → card lands as the greeting card (card-emerge)",
     "motion": [
       "seal-reveal orchestration (one)",
-      "motes drift (ambient content, reduced-motion honoured)",
-      "hover micro"
+      "ambient family: motes + twinkle + shooting star + aurora drift + petal fall + envelope float + aura pulse",
+      "hover micro",
+      "NOTE v4: prefers-reduced-motion override — ambient loops kept & slowed (MIUI/HyperOS 'remove animations' sets reduce and killed ALL motion in v3); entrances still collapse to 150ms"
     ]
   },
+  "v4_changes": [
+    "music: player primed on page load (prime() + poll for YT API), start on pointerdown (fires before click), status pill with real state",
+    "motion fix: reduced-motion block no longer kills ambient loops (root cause of 'gaada motion' on Anna's MIUI phone)",
+    "visual: aurora layer + 6 falling petals + music pill",
+    "fix: removed accidental no-preference block that would have pre-run entrance animations",
+    "fix: pill texts Portuguese → Indonesian"
+  ],
   "user_gates": {
     "audience": "Anna, ~16 years old",
     "tone": "bright / soft fantasy-manhwa (NOT dark luxury)",

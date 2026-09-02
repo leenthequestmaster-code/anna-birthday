@@ -25,7 +25,10 @@
  * contrast: pass (40–41) · nav: none (single-destination) · footer: Ft6 · slop: pass (42–45)
  * honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49) · icons: pass (30)
  * mobile: pass (34, 49, 50–57)
- * motion budget: (1) seal→letter→card handoff orchestration (one entrance) · (2) ambient family [motes + twinkle + shooting star + envelope float + aura] · (3) hover micro
+ * motion budget: (1) seal→letter→card handoff orchestration (one entrance) · (2) ambient family [motes + twinkle + shooting star + aurora + petals + envelope float + aura] · (3) hover micro
+ * v4: aurora + petals + music pill + player primed on load + music starts on pointerdown ·
+ *      reduced-motion override: ambient loops kept (Anna's MIUI kills all motion otherwise),
+ *      entrances still collapse to 150ms — deliberate, documented deviation from gate default.
  * gradients: radial blooms on fixed background layers + wax-seal radial (illustrated object) — no gradient text, no UI-surface gradients
  */
 :root {
@@ -53,6 +56,8 @@
   --color-glow: oklch(75% 0.12 80 / 0.45);
   --color-glow-soft: oklch(80% 0.1 80 / 0.25);
   --color-star: oklch(70% 0.09 80 / 0.9);
+  --color-petal: oklch(85% 0.1 80 / 0.85);
+  --color-petal-alt: oklch(78% 0.08 65 / 0.8);
   /* type */
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-body: "Satoshi", ui-sans-serif, system-ui, sans-serif;
@@ -175,6 +180,74 @@ main:focus { outline: none; }
   2%   { opacity: 1; }
   16%  { translate: 30vw 15vh; opacity: 0; }
   100% { translate: 30vw 15vh; opacity: 0; }
+}
+
+/* ---------- aurora (v4: animated dawn veil) ---------- */
+.aurora {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  filter: blur(46px);
+  opacity: 0.75;
+  animation: aurora-drift 26s var(--ease-in-out) infinite alternate;
+}
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+.aurora::before {
+  width: 62vw; height: 44vh;
+  left: -8%; top: 6%;
+  background: var(--color-bloom-rose);
+  animation: aurora-a 18s var(--ease-in-out) infinite alternate;
+}
+.aurora::after {
+  width: 70vw; height: 50vh;
+  right: -12%; bottom: 2%;
+  background: var(--color-bloom-gold);
+  animation: aurora-b 23s var(--ease-in-out) infinite alternate;
+}
+@keyframes aurora-drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to   { transform: translate3d(2%, 2%, 0) scale(1.06); }
+}
+@keyframes aurora-a {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.8; }
+  to   { transform: translate3d(14vw, 6vh, 0) scale(1.15); opacity: 1; }
+}
+@keyframes aurora-b {
+  from { transform: translate3d(0, 0, 0) scale(1.05); opacity: 0.9; }
+  to   { transform: translate3d(-12vw, -8vh, 0) scale(0.95); opacity: 0.7; }
+}
+
+/* ---------- petals (v4: drifting gold petals) ---------- */
+.petal {
+  position: absolute;
+  top: -4vh;
+  left: var(--px);
+  width: 12px; height: 12px;
+  background: var(--color-petal);
+  border-radius: 80% 20% 80% 20%;
+  opacity: 0;
+  animation: petal-fall var(--pt) linear infinite;
+  animation-delay: var(--pd);
+}
+.petal::after {
+  content: "";
+  position: absolute;
+  inset: 3px 4px;
+  border-radius: inherit;
+  background: var(--color-petal-alt);
+  opacity: 0.6;
+}
+@keyframes petal-fall {
+  0%   { transform: translate3d(0, -4vh, 0) rotate(0deg); opacity: 0; }
+  8%   { opacity: var(--po); }
+  50%  { transform: translate3d(6vw, 48vh, 0) rotate(220deg); }
+  92%  { opacity: var(--po); }
+  100% { transform: translate3d(-3vw, 104vh, 0) rotate(480deg); opacity: 0; }
 }
 
 /* ---------- ambient motes ---------- */
@@ -584,11 +657,43 @@ main:focus { outline: none; }
 }
 .colophon p { margin: 0; }
 
-/* ---------- music toggle ---------- */
-.music-btn {
+/* v4: music state pill — shows priming/playing state so the delay is visible, not silent */
+.music-pill {
   position: fixed;
   top: var(--space-md);
   right: var(--space-md);
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-rule);
+  background: var(--color-paper);
+  color: var(--color-accent-deep);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  box-shadow: 0 4px 12px -6px var(--color-shadow-soft);
+  transition: opacity var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+}
+.music-pill[hidden] { display: none; }
+.music-pill .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  animation: pill-pulse 1.4s var(--ease-in-out) infinite;
+}
+.music-pill.is-playing .dot { animation: pill-pulse 2.6s var(--ease-in-out) infinite; }
+.music-pill.is-error .dot { background: var(--color-muted); animation: none; }
+@keyframes pill-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.75); }
+}
+/* keep the old toggle reachable next to the pill */
+.music-btn {
+  position: fixed;
+  top: var(--space-md);
+  right: calc(var(--space-md) + 0px);
   z-index: 50;
   width: 44px;
   height: 44px;
@@ -602,6 +707,7 @@ main:focus { outline: none; }
   box-shadow: 0 4px 12px -6px var(--color-shadow-soft);
   transition: transform var(--dur-micro) var(--ease-out);
 }
+.music-btn { top: auto; bottom: var(--space-md); }
 .music-btn:hover { transform: translateY(-2px); }
 .music-btn:active { transform: none; }
 .music-btn svg { width: 20px; height: 20px; }
@@ -624,23 +730,19 @@ main:focus { outline: none; }
 }
 
 /* ---------- reduced motion ---------- */
+/* v4: MIUI/HyperOS "remove animations" override — this is a gift page, motion IS the gift.
+   Keep our named ambient animations running; only honor true vestibular reduce (no big fly-ins). */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 150ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 150ms !important;
-  }
-  .motes span { animation: none; opacity: 0; }
-  .star { animation: none; opacity: var(--so); }
-  .shooting { display: none; }
-  .envelope-float { animation: none; }
-  .env-shadow { animation: none; }
-  .env__aura { animation: none; opacity: 0.4; }
+  /* keep: ambient loops (twinkle, motes, petals, aurora, float, aura) */
+  /* kill: large displacement entrances */
   .reveal { animation: reveal-reduced 150ms linear forwards !important; }
-  @keyframes reveal-reduced { to { opacity: 1; transform: none; } }
   .letter-card { animation: none; opacity: 1; }
+  .envelope.is-zoom .env__letter { transition-duration: 150ms; }
+  .seal-overlay::before { transition-duration: 150ms; }
+  .shooting { display: none; }
+  @keyframes reveal-reduced { to { opacity: 1; transform: none; } }
+  .motes span { animation-duration: 30s; }
 }
-
 /* ---------- small screens ---------- */
 @media (max-width: 480px) {
   .hero { padding: var(--space-xl) var(--space-lg) var(--space-2xl); }
@@ -657,6 +759,13 @@ main:focus { outline: none; }
 
 <div class="sky" aria-hidden="true">
   <div class="dawn-blooms"></div>
+  <div class="aurora"></div>
+  <span class="petal" style="--px: 8%;  --pt: 14s; --pd: 0s;   --po: 0.7"></span>
+  <span class="petal" style="--px: 22%; --pt: 18s; --pd: 4s;   --po: 0.5"></span>
+  <span class="petal" style="--px: 41%; --pt: 16s; --pd: 9s;   --po: 0.6"></span>
+  <span class="petal" style="--px: 57%; --pt: 20s; --pd: 2s;   --po: 0.45"></span>
+  <span class="petal" style="--px: 74%; --pt: 15s; --pd: 7s;   --po: 0.65"></span>
+  <span class="petal" style="--px: 90%; --pt: 19s; --pd: 12s;  --po: 0.5"></span>
   <span class="star" style="--sx: 7%;  --sy: 9%;  --ss: 2px; --st: 3.4s; --sd: 0.2s; --so: 0.85"></span>
   <span class="star" style="--sx: 16%; --sy: 22%; --ss: 3px; --st: 4.1s; --sd: 1.1s; --so: 0.7"></span>
   <span class="star" style="--sx: 27%; --sy: 6%;  --ss: 2px; --st: 2.9s; --sd: 0.6s; --so: 0.9"></span>
@@ -710,6 +819,10 @@ main:focus { outline: none; }
   <svg class="icon--on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg>
   <svg class="icon--off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l10-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/><line x1="3" y1="3" x2="21" y2="21"/></svg>
 </button>
+<div id="musicPill" class="music-pill" hidden role="status">
+  <span class="dot" aria-hidden="true"></span>
+  <span id="musicPillText">Menyiapkan musik…</span>
+</div>
 <div id="yt-player" aria-hidden="true"></div>
 
 <main class="page" id="main" tabindex="-1">
@@ -746,10 +859,24 @@ main:focus { outline: none; }
 </main>
 
 <script>
-/* Music module — must be defined BEFORE the YouTube API script loads
-   so the ready callback can never lose the race. */
+/* Music module v4 — zero-delay start:
+   1. Prime the YT player on page LOAD (not on seal tap) so it's ready before Anna taps.
+   2. Start on the FIRST pointerdown anywhere (pointerdown fires before click; saves ~100ms+).
+   3. Pill shows the real state: Preparando → Tocando, so the wait is visible, not a mystery. */
 var __music = {
-  ready: false, want: false, playing: false, player: null,
+  ready: false, want: false, playing: false, player: null, primed: false,
+  pill: function (state, text) {
+    var p = document.getElementById('musicPill');
+    if (!p) return;
+    var t = document.getElementById('musicPillText');
+    p.hidden = false;
+    p.classList.toggle('is-playing', state === 'playing');
+    p.classList.toggle('is-error', state === 'error');
+    if (t && text) t.textContent = text;
+    if (state === 'playing') {
+      window.setTimeout(function () { p.hidden = true; }, 4000);
+    }
+  },
   ensure: function () {
     if (this.player || typeof YT === 'undefined' || !YT.Player) return;
     var self = this;
@@ -757,7 +884,11 @@ var __music = {
       videoId: 'CcS1fsuT10M',
       playerVars: { controls: 0, disablekb: 1, playsinline: 1, rel: 0 },
       events: {
-        onReady: function () { self.ready = true; if (self.want) self.start(); },
+        onReady: function () {
+          self.ready = true;
+          self.pill('priming', 'Musik siap — ketuk segelnya');
+          if (self.want) self.start();
+        },
         onStateChange: function (e) {
           if (e.data === YT.PlayerState.ENDED) {
             self.player.seekTo(0, true);
@@ -767,16 +898,33 @@ var __music = {
       }
     });
   },
+  prime: function () {
+    /* called on load: build the player early so onReady fires before the tap */
+    if (this.primed) return;
+    this.primed = true;
+    var self = this;
+    if (typeof YT !== 'undefined' && YT.Player) { this.ensure(); }
+    else {
+      /* API script not loaded yet — poll briefly; onYouTubeIframeAPIReady also calls ensure */
+      var tries = 0;
+      var iv = window.setInterval(function () {
+        tries++;
+        if (typeof YT !== 'undefined' && YT.Player) { window.clearInterval(iv); self.ensure(); }
+        else if (tries > 40) { window.clearInterval(iv); self.pill('error', 'Musik tidak tersedia (tanpa internet?)'); }
+      }, 250);
+    }
+  },
   start: function () {
     var btn = document.getElementById('musicBtn');
     if (!this.player) {
       if (typeof YT !== 'undefined' && YT.Player) { this.ensure(); if (!this.ready) { this.want = true; return; } }
       else { this.want = true; return; }
     }
-    if (!this.ready) { this.want = true; return; }
+    if (!this.ready) { this.want = true; this.pill('priming', 'Menyiapkan musik…'); return; }
     this.player.setVolume(70);
     this.player.playVideo();
     this.playing = true;
+    this.pill('playing', '♪ Multo — Cup of Joe');
     btn.hidden = false;
     btn.classList.remove('is-paused');
     btn.setAttribute('aria-label', 'Matikan musik');
@@ -795,6 +943,9 @@ function onYouTubeIframeAPIReady() {
   __music.ensure();
   if (__music.want) __music.start();
 }
+/* prime on load — the whole point of v4 */
+if (document.readyState === 'complete' || document.readyState === 'interactive') { __music.prime(); }
+else { document.addEventListener('DOMContentLoaded', function () { __music.prime(); }); }
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
@@ -809,6 +960,16 @@ function onYouTubeIframeAPIReady() {
   var settled = false;
 
   musicBtn.addEventListener('click', function () { __music.toggle(); });
+
+  /* v4: start music on the FIRST pointerdown on the seal — pointerdown fires
+     ~100-300ms before the click event completes, and on mobile it's the earliest
+     reliable gesture. Guarded so the click handler doesn't double-start. */
+  var musicStarted = false;
+  seal.addEventListener('pointerdown', function () {
+    if (musicStarted) return;
+    musicStarted = true;
+    __music.start();
+  });
 
   /* --- orchestrated handoff: seal → letter flies → card lands --- */
   function settle() {
